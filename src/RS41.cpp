@@ -25,12 +25,10 @@ void RS41::init() {
   digitalWrite(RS41_GPIO_PWR_PIN, HIGH);
 
   // The RS41 immediately sends out a banner
-  String banner;
   for (int i = 0; i < 5; i++) {
-      banner = _serial.readStringUntil('\r');
-      if (banner.indexOf("NCAR") != -1) {
-        Serial.print("Banner: ");
-        Serial.println(banner);
+      String txt = _serial.readStringUntil('\r');
+      if (txt.indexOf("NCAR") != -1) {
+        _banner = txt;
         break;
     }
   }
@@ -43,12 +41,49 @@ void RS41::init() {
   for (int i = 0; i < 5; i++) {
       meta = read_meta_data();
       if (meta.indexOf(",") != -1) {
-        Serial.print("Meta: ");
-        Serial.println(meta);
+        //Serial.print("Meta: ");
+        //Serial.println(meta);
         break;
     }
   }
 
+}
+
+String RS41::banner() {
+  return _banner;
+}
+
+RS41::RS41SensorData RS41::decoded_sensor_data() {
+  RS41SensorData decoded_data;
+  decoded_data.valid = false;
+
+  String str_data = read_sensor_data();
+  if (str_data.length()) {
+    String tokens[17];
+    // Add a trailing comma so that all tokens are terminated.
+    str_data += ',';
+    if (tokenize_string(str_data, tokens, 17)) {
+      decoded_data.valid = true;
+      decoded_data.frame_count = tokens[0].toInt();
+      decoded_data.air_temp_degC = tokens[1].toFloat();
+      decoded_data.humdity_percent = tokens[2].toFloat();
+      decoded_data.hsensor_temp_degC = tokens[3].toFloat();
+      decoded_data.pres_mb = tokens[4].toFloat();
+      decoded_data.internal_temp_degC = tokens[5].toFloat();
+      decoded_data.module_status = tokens[6].toInt();
+      decoded_data.module_error = tokens[7].toInt();
+      decoded_data.pcb_supply_V = tokens[8].toFloat();
+      decoded_data.lsm303_temp_degC = tokens[9].toFloat();
+      decoded_data.pcb_heater_on = tokens[10].toInt();
+      decoded_data.mag_hdgXY_deg = tokens[11].toFloat();
+      decoded_data.mag_hdgXZ_deg = tokens[12].toFloat();
+      decoded_data.mag_hdgYZ_deg = tokens[13].toFloat();
+      decoded_data.accelX_mG = tokens[14].toFloat();
+      decoded_data.accelY_mG = tokens[15].toFloat();
+      decoded_data.accelZ_mG = tokens[16].toFloat();
+    }
+  }
+  return decoded_data;
 }
 
 String RS41::read_sensor_data() {
@@ -75,4 +110,24 @@ String RS41::rs41_cmd(const String& cmd) {
   _serial.write("\r");
   _serial.flush();
   return _serial.readStringUntil('\r');
+}
+
+bool RS41::tokenize_string(String& source, String (&tokens)[], int nTokens) {
+    int token_num = 0;
+    bool valid = false;
+    int start = 0;
+    int end = source.indexOf(',', start);
+    while(end != -1)
+    {
+        tokens[token_num] = source.substring(start, end);
+        start = end + 1;
+        end = source.indexOf(',', start);
+        if (token_num == (nTokens-1)) {
+          valid = true;
+          break;
+        }
+        token_num++;
+    }
+
+    return valid;
 }

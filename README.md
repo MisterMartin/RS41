@@ -10,6 +10,21 @@ git clone https://github.com/MisterMartin/RS41.git
 ```
 Open an example sketch in the Arduino IDE and run it.
 
+## Usage
+- The Teensy serial port is specified in the `RS41` contructor.
+- No initialization is done in the constructor; instead you
+  must call the `init()` function. This allows you to reset
+  the RS41 at any time, and mitigates issues that might occur
+  due to the inderminate object construction timing.
+- RSD (Read Sensor Data) commands are sent preemptively so that
+  the sensor data is available without waiting. This means that
+  the data you get back will be from the last time you requested
+  data. Thus you need to be comfortable getting data which is
+  as old as your sample loop period.
+- But, there is a `nochache` option for the read sensor data
+  request, which will clear the read buffer, issue the RSD
+  command, and wait for the new data.
+
 ## Examples
 - `examples/RS41test.ino` samples the RS41 and prints data to the serial console.
   At program start, you are prompted whether you want to do a sensor regeneration or not.

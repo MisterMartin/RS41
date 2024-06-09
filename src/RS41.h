@@ -6,7 +6,7 @@
 
 class RS41 {
 
-#define RS41_SERIAL_BUFFER_SIZE 1024
+#define RS41_SERIAL_BUFFER_SIZE 2048
 #define RS41_GPIO_PWR_PIN 32
   public:
     /// @brief Data fields from the RS41 sensor data string

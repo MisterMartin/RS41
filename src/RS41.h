@@ -78,7 +78,11 @@ class RS41 {
     String banner();
     /// @brief Decoded sensor data
     RS41SensorData decoded_sensor_data();
-    /// @brief Query the RS41 for the RS41 sensor data
+    /// @brief Get the most recent RS41 sensor data
+    /// The serial port is read for a CR terminated string.
+    /// An RSD command is then sent so that the results will be
+    /// avaiable in the serial buffer on the next call
+    /// to this routine.
     /// @return A string containing the sensor data. The 
     /// string will be zero length if the query timed out.
     String read_sensor_data();
@@ -107,6 +111,7 @@ class RS41 {
     /// a total of (say) 100 characters to be sent and received,
     /// this would be ~18ms.
     String rs41_cmd(const String& cmd);
+    void clear_read_buffer();
     bool tokenize_string(String& source, String (&tokens)[], int nTokens);
 
   protected:

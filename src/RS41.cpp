@@ -32,6 +32,7 @@ void RS41::init() {
         break;
     }
   }
+  clear_read_buffer();
 
   // Wait for RS41 to get running
   delay(1000);
@@ -43,6 +44,13 @@ void RS41::init() {
         break;
     }
   }
+  clear_read_buffer();
+
+  // Send the initial read sensor data
+  _serial.write("RSD");
+  _serial.write("\r");
+  _serial.flush();
+
 }
 
 String RS41::banner() {
@@ -86,8 +94,16 @@ RS41::RS41SensorData RS41::decoded_sensor_data() {
   return decoded_data;
 }
 
-String RS41::read_sensor_data() {
-  return(rs41_cmd("RSD"));
+String RS41::read_sensor_data() {  
+
+  // There should be a data record waiting for us
+  String sensor_data = _serial.readStringUntil('\r');
+
+  // Initiate the next read sensor data
+  _serial.write("RSD");
+  _serial.write("\r");
+
+  return(sensor_data);
 }
 
 String RS41::read_meta_data() {
@@ -95,7 +111,16 @@ String RS41::read_meta_data() {
 }
 
 String RS41::recondition() {
-  return(rs41_cmd("RHS"));
+  clear_read_buffer();
+
+  // Send the recondition command
+  String rhs_response = rs41_cmd("RHS");
+
+  // Initiate the next read sensor data
+  _serial.write("RSD");
+  _serial.write("\r");
+
+  return rhs_response;
 }
 
 String RS41::rs41_cmd(const String& cmd) {
@@ -112,6 +137,11 @@ String RS41::rs41_cmd(const String& cmd) {
   return _serial.readStringUntil('\r');
 }
 
+void RS41::clear_read_buffer() {
+  while(_serial.available()) {
+    _serial.read();
+  }
+}
 bool RS41::tokenize_string(String& source, String (&tokens)[], int nTokens) {
     int token_num = 0;
     bool valid = false;

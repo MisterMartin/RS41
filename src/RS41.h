@@ -77,15 +77,23 @@ class RS41 {
     /// the return value will be an empty string.
     String banner();
     /// @brief Decoded sensor data
-    RS41SensorData decoded_sensor_data();
+    /// @param nocache Clear the serial buffer and issue a 
+    /// new RSD command so that data which are cached in
+    /// the serial buffer are not used.
+    /// @return A RS41SensorData structure. Check
+    /// the valid member to insure that the data are valid.
+    RS41SensorData decoded_sensor_data(bool nocache);
     /// @brief Get the most recent RS41 sensor data
     /// The serial port is read for a CR terminated string.
     /// An RSD command is then sent so that the results will be
     /// avaiable in the serial buffer on the next call
     /// to this routine.
+    /// @param nocache Clear the serial buffer and issue a 
+    /// new RSD command so that data which are cached in
+    /// the serial buffer are not used.
     /// @return A string containing the sensor data. The 
     /// string will be zero length if the query timed out.
-    String read_sensor_data();
+    String read_sensor_data(bool nocache);
     /// @brief Meta data
     /// @return The cached meta data.
     String meta_data();

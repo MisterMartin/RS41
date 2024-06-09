@@ -61,11 +61,11 @@ String RS41::meta_data() {
   return _meta;
 }
 
-RS41::RS41SensorData RS41::decoded_sensor_data() {
+RS41::RS41SensorData RS41::decoded_sensor_data(bool nocache=false) {
   RS41SensorData decoded_data;
   decoded_data.valid = false;
 
-  String str_data = read_sensor_data();
+  String str_data = read_sensor_data(nocache);
   if (str_data.length()) {
     String tokens[17];
     // Add a trailing comma so that all tokens are terminated.
@@ -94,8 +94,15 @@ RS41::RS41SensorData RS41::decoded_sensor_data() {
   return decoded_data;
 }
 
-String RS41::read_sensor_data() {  
+String RS41::read_sensor_data(bool nocache=false) {  
 
+  if (nocache) {
+    // clear the read buffer and issue a new RSD command
+    clear_read_buffer();
+    _serial.write("RSD");
+    _serial.write("\r");
+
+  }
   // There should be a data record waiting for us
   String sensor_data = _serial.readStringUntil('\r');
 

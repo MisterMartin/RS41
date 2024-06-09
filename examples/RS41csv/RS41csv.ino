@@ -13,6 +13,7 @@
 #define DATA_FILE_BASE_NAME "RS41_data_"
 #define DATA_FILE_EXT ".csv"
 
+bool verbose = true;
 bool first_loop = true;
 RS41 rs41(Serial7);
 
@@ -24,21 +25,40 @@ File csv_file;
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial) { ; }
+  while (!Serial)
+  {
+    ;
+  }
 
-  if (!SD.begin(BUILTIN_SDCARD)) {
+  if (!SD.begin(BUILTIN_SDCARD))
+  {
     Serial.println("Unable to acces the SD card, data WILL NOT be saved to a file");
-  } else {
+  }
+  else
+  {
     csv_file_name = next_file_name();
+    if (verbose)
+    {
+      Serial.println("Creating " + String(csv_file_name));
+      csv_file = SD.open(csv_file_name.c_str(), O_WRITE);
+    }
   }
 
   // Configure the RS41 serial port, power on the RS41, capture the banner, query the metadata.
   rs41.init();
 }
 
+String comma(',');
+
 void loop()
 {
-  if (first_loop) {
+  if (first_loop)
+    {
+      if (csv_file_name.length()){
+        csv_file.write(rs41.sensor_data_var_names.c_str(), strlen(rs41.sensor_data_var_names.c_str()));
+        csv_file.write("\r",1);
+        csv_file.flush();
+    }
     Serial.println(rs41.sensor_data_var_names);
     first_loop = false;
   }
@@ -47,70 +67,97 @@ void loop()
   delay(2000);
 
   RS41::RS41SensorData sensor_data = rs41.decoded_sensor_data();
-  if (sensor_data.valid) {
-    // Create the CSV file 
-    Serial.print(sensor_data.frame_count); Serial.print(",");
-    Serial.print(sensor_data.air_temp_degC); Serial.print(",");
-    Serial.print(sensor_data.humdity_percent); Serial.print(",");
-    Serial.print(sensor_data.hsensor_temp_degC); Serial.print(",");
-    Serial.print(sensor_data.pres_mb); Serial.print(",");
-    Serial.print(sensor_data.internal_temp_degC); Serial.print(",");
-    Serial.print(sensor_data.module_status); Serial.print(",");
-    Serial.print(sensor_data.module_error); Serial.print(",");
-    Serial.print(sensor_data.pcb_supply_V); Serial.print(",");
-    Serial.print(sensor_data.lsm303_temp_degC); Serial.print(",");
-    Serial.print(sensor_data.pcb_heater_on); Serial.print(",");
-    Serial.print(sensor_data.mag_hdgXY_deg); Serial.print(",");
-    Serial.print(sensor_data.mag_hdgXZ_deg); Serial.print(",");
-    Serial.print(sensor_data.mag_hdgYZ_deg); Serial.print(",");
-    Serial.print(sensor_data.accelX_mG); Serial.print(",");
-    Serial.print(sensor_data.accelY_mG); Serial.print(",");
-    Serial.print(sensor_data.accelZ_mG);
-    Serial.println();
-  } else {
+  if (sensor_data.valid)
+  {
+    // Build the csv string
+    String csv_str =
+        String(sensor_data.frame_count) + comma +
+        String(sensor_data.air_temp_degC) + comma +
+        String(sensor_data.humdity_percent) + comma +
+        String(sensor_data.hsensor_temp_degC) + comma +
+        String(sensor_data.pres_mb) + comma +
+        String(sensor_data.internal_temp_degC) + comma +
+        String(sensor_data.module_status) + comma +
+        String(sensor_data.module_error) + comma +
+        String(sensor_data.pcb_supply_V) + comma +
+        String(sensor_data.lsm303_temp_degC) + comma +
+        String(sensor_data.pcb_heater_on) + comma +
+        String(sensor_data.mag_hdgXY_deg) + comma +
+        String(sensor_data.mag_hdgXZ_deg) + comma +
+        String(sensor_data.mag_hdgYZ_deg) + comma +
+        String(sensor_data.accelX_mG) + comma +
+        String(sensor_data.accelY_mG) + comma +
+        String(sensor_data.accelZ_mG);
+
+    if (csv_file_name.length()) {
+      // Write it to the file
+      csv_file.write(csv_str.c_str(), csv_str.length());
+      csv_file.write("\r",1);
+      csv_file.flush();
+    }
+
+    // Print it
+    Serial.println(csv_str);
+  }
+  else
+  {
     Serial.println("Unable to obtain RS41 sensor data");
   }
 }
 
-String next_file_name() {
-  // Scan the root directory of the SD card, and 
+String next_file_name()
+{
+  // Scan the root directory of the SD card, and
   // find the highest numbered data file. Return a
   // string with the next higher numbered file name.
 
   int next_file_num = 0;
   File dir = SD.open("/");
-  while (true) {
-    File entry =  dir.openNextFile();
-    if (! entry) {
+  while (true)
+  {
+    File entry = dir.openNextFile();
+    if (!entry)
+    {
       // no more files
       break;
     }
 
     String file_name = entry.name();
-    if (file_name.startsWith(DATA_FILE_BASE_NAME) && file_name.endsWith(DATA_FILE_EXT)) {
+    if (file_name.startsWith(DATA_FILE_BASE_NAME) && file_name.endsWith(DATA_FILE_EXT))
+    {
       String file_num = file_name.substring(strlen(DATA_FILE_BASE_NAME), file_name.indexOf(DATA_FILE_EXT));
-      if (isIntStr(file_num)) {
+      if (isIntStr(file_num))
+      {
         int n = file_num.toInt();
-        if (next_file_num <= n) {
-          next_file_num = n+1;
+        if (next_file_num <= n)
+        {
+          next_file_num = n + 1;
         }
-      } 
+      }
     }
-    if (entry.isDirectory()) {
-    } else {
+    if (entry.isDirectory())
+    {
+    }
+    else
+    {
     }
     entry.close();
   }
-  String next_name = String(DATA_FILE_BASE_NAME) + String(next_file_num) + String(DATA_FILE_EXT);
+
+  char cbuf[10];
+  snprintf(cbuf, sizeof(cbuf), "%05d", next_file_num);
+  String next_name = String(DATA_FILE_BASE_NAME) + String(cbuf) + String(DATA_FILE_EXT);
   return next_name;
 }
 
-boolean isIntStr(String str) {
-  for(unsigned int i=0;i<str.length();i++) {
-    if(!isDigit(str.charAt(i))) {
+boolean isIntStr(String str)
+{
+  for (unsigned int i = 0; i < str.length(); i++)
+  {
+    if (!isDigit(str.charAt(i)))
+    {
       return false;
     }
   }
   return true;
 }
-

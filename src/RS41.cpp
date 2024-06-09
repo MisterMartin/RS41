@@ -12,11 +12,11 @@ RS41::~RS41() {
 }
 
 void RS41::init() {
-  _serial.begin(56700);
+  Serial7.begin(56700);
 
   // Increase serial buffer sizes for Teensy 4.1
-  //_serial.addMemoryForRead(&_rs41_rx_buffer, sizeof(_rs41_rx_buffer));
-  //_serial.addMemoryForWrite(&_rs41_tx_buffer, sizeof(_rs41_tx_buffer));
+  Serial7.addMemoryForRead(&_rs41_rx_buffer, sizeof(_rs41_rx_buffer));
+  Serial7.addMemoryForWrite(&_rs41_tx_buffer, sizeof(_rs41_tx_buffer));
 
   // Power cycle the RS41
   pinMode(RS41_GPIO_PWR_PIN, OUTPUT);
@@ -26,7 +26,7 @@ void RS41::init() {
 
   // The RS41 immediately sends out a banner
   for (int i = 0; i < 5; i++) {
-      String txt = _serial.readStringUntil('\r');
+      String txt = Serial7.readStringUntil('\r');
       if (txt.indexOf("NCAR") != -1) {
         _banner = txt;
         break;
@@ -106,10 +106,10 @@ String RS41::rs41_cmd(const String& cmd) {
   // If the flush and read wait times are a problem, we
   // can implement a scheme where the command is sent,
   // and we return later to get get the result.
-  _serial.write(cmd.c_str());
-  _serial.write("\r");
-  _serial.flush();
-  return _serial.readStringUntil('\r');
+  Serial7.write(cmd.c_str());
+  Serial7.write("\r");
+  Serial7.flush();
+  return Serial7.readStringUntil('\r');
 }
 
 bool RS41::tokenize_string(String& source, String (&tokens)[], int nTokens) {

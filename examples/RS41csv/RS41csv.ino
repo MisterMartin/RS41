@@ -57,7 +57,7 @@ void loop()
     {
       if (csv_file_name.length()){
         csv_file.write(rs41.sensor_data_var_names.c_str(), strlen(rs41.sensor_data_var_names.c_str()));
-        csv_file.write("\r",1);
+        csv_file.write("\n",1);
         csv_file.flush();
     }
     Serial.println(rs41.sensor_data_var_names);
@@ -93,7 +93,7 @@ void loop()
     if (csv_file_name.length()) {
       // Write it to the file
       csv_file.write(csv_str.c_str(), csv_str.length());
-      csv_file.write("\r",1);
+      csv_file.write("\n",1);
       csv_file.flush();
     }
 

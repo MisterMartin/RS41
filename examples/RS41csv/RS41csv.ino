@@ -1,4 +1,5 @@
-// Create CSV suitable outout from the RS41
+// Send sensor data from the RS41 to the serial console 
+// and save to a CSV file.
 
 #include <RS41.h>
 #include "SD.h"

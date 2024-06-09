@@ -4,8 +4,6 @@
 
 #include "Arduino.h"
 
-
-
 class RS41 {
 
 #define RS41_SERIAL_BUFFER_SIZE 1024

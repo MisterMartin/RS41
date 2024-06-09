@@ -31,6 +31,7 @@ void loop()
 {
   if (first_loop) {
     Serial.println(rs41.banner());
+    Serial.println("RS41 meta data: " + rs41.meta_data());
     Serial.println(rs41.sensor_data_var_names);
     first_loop = false;
   }

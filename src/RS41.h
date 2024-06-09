@@ -61,7 +61,7 @@ class RS41 {
   public:
     /// @brief Constructor
     /// @param serial The RS421 serial port
-    RS41(HardwareSerial& serial);
+    RS41(HardwareSerialIMXRT& serial);
     /// @brief Destructor
     ///   Power off RS41
     ~RS41();
@@ -82,6 +82,9 @@ class RS41 {
     /// @return A string containing the sensor data. The 
     /// string will be zero length if the query timed out.
     String read_sensor_data();
+    /// @brief Meta data
+    /// @return The cached meta data.
+    String meta_data();
     /// @brief Query the RS41 for the RS41 meta data
     /// @return A string containing the sensor data. The 
     /// string will be zero length if the query timed out.
@@ -107,10 +110,11 @@ class RS41 {
     bool tokenize_string(String& source, String (&tokens)[], int nTokens);
 
   protected:
-    HardwareSerial& _serial;
+    HardwareSerialIMXRT& _serial;
     uint8_t _rs41_rx_buffer[RS41_SERIAL_BUFFER_SIZE];
     uint8_t _rs41_tx_buffer[RS41_SERIAL_BUFFER_SIZE];
     String _banner;
+    String _meta;
 };
 
 #endif

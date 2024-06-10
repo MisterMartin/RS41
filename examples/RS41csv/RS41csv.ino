@@ -67,7 +67,7 @@ void loop()
   // A delay at the start prevents missing the first data frame
   delay(2000);
 
-  RS41::RS41SensorData sensor_data = rs41.decoded_sensor_data(false);
+  RS41::RS41SensorData_t sensor_data = rs41.decoded_sensor_data(false);
   if (sensor_data.valid)
   {
     // Build the csv string

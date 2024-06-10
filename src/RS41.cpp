@@ -61,8 +61,8 @@ String RS41::meta_data() {
   return _meta;
 }
 
-RS41::RS41SensorData RS41::decoded_sensor_data(bool nocache=false) {
-  RS41SensorData decoded_data;
+RS41::RS41SensorData_t RS41::decoded_sensor_data(bool nocache=false) {
+  RS41SensorData_t decoded_data;
   decoded_data.valid = false;
 
   String str_data = read_sensor_data(nocache);

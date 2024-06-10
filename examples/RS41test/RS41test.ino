@@ -50,7 +50,7 @@ void loop()
     }
   }
 
-  RS41::RS41SensorData sensor_data = rs41.decoded_sensor_data(false);
+  RS41::RS41SensorData_t sensor_data = rs41.decoded_sensor_data(false);
   if (sensor_data.valid) {
     Serial.print(sensor_data.frame_count); Serial.print(",");
     Serial.print(sensor_data.air_temp_degC); Serial.print(",");

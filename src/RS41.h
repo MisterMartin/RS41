@@ -11,7 +11,7 @@ class RS41 {
   public:
     /// @brief Data fields from the RS41 sensor data string
     /// These are in the order that the tokens appear in the data string.
-    struct RS41SensorData {
+    struct RS41SensorData_t {
       /// @brief If this record is valid
       /// If the data read is unsuccesful, or the data decoding
       /// fails, valid will be false
@@ -82,7 +82,7 @@ class RS41 {
     /// the serial buffer are not used.
     /// @return A RS41SensorData structure. Check
     /// the valid member to insure that the data are valid.
-    RS41SensorData decoded_sensor_data(bool nocache);
+    RS41SensorData_t decoded_sensor_data(bool nocache);
     /// @brief Get the most recent RS41 sensor data
     /// The serial port is read for a CR terminated string.
     /// An RSD command is then sent so that the results will be

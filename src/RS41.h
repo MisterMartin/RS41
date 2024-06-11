@@ -71,6 +71,8 @@ class RS41 {
     /// - Read the banner message
     /// - Get the RS41 meta data
     void init();
+    /// @brief Power off RS41
+    void pwr_off();
     /// @brief Firmware banner
     /// @return The RS41 firmware banner which is sent
     /// at initial power on. If it was not detected,

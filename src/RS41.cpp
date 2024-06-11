@@ -53,6 +53,12 @@ void RS41::init() {
 
 }
 
+void RS41::pwr_off() {
+  // Power off the RS41
+  pinMode(RS41_GPIO_PWR_PIN, OUTPUT);
+  digitalWrite(RS41_GPIO_PWR_PIN, LOW);
+}
+
 String RS41::banner() {
   return _banner;
 }

@@ -4,6 +4,8 @@ NCAR RS41 sensor support library for Teensy 4.1.
 Dependencies: Teensyduino >= v1.59
 
 ## Installation
+Install with other LASP repos.
+
 ```sh
 cd Documents/arduino/libraries # Or wherever your Arduino libraries are
 git clone https://github.com/MisterMartin/RS41.git

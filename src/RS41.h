@@ -8,6 +8,12 @@ class RS41 {
 
 #define RS41_SERIAL_BUFFER_SIZE 2048
 #define RS41_GPIO_PWR_PIN 32
+#define RS41_SERIAL_TIMEOUT_MS 300
+/// The number of times to (re)try to get meta data from
+/// the RS41. It's significant because if we try too long, and
+/// the serial time out is long enough, the watchdog timer can 
+/// reboot the system.
+#define RS41_SERIAL_TRIES 2
   public:
     /// @brief Data fields from the RS41 sensor data string
     /// These are in the order that the tokens appear in the data string.

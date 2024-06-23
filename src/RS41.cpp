@@ -13,6 +13,7 @@ RS41::~RS41() {
 
 void RS41::init() {
   _serial.begin(56700);
+  _serial.setTimeout(RS41_SERIAL_TIMEOUT_MS);
 
   // Increase serial buffer sizes for Teensy 4.1
   _serial.addMemoryForRead(&_rs41_rx_buffer, sizeof(_rs41_rx_buffer));
@@ -25,7 +26,7 @@ void RS41::init() {
   digitalWrite(RS41_GPIO_PWR_PIN, HIGH);
 
   // The RS41 immediately sends out a banner
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < RS41_SERIAL_TRIES; i++) {
       String txt = _serial.readStringUntil('\r');
       if (txt.indexOf("NCAR") != -1) {
         _banner = txt;
@@ -38,7 +39,7 @@ void RS41::init() {
   delay(1000);
 
   // Get the meta data
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < RS41_SERIAL_TRIES; i++) {
       _meta = read_meta_data();
       if (_meta.indexOf(",") != -1) {
         break;

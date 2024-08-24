@@ -67,7 +67,7 @@ class RS41 {
   public:
     /// @brief Constructor
     /// @param serial The RS421 serial port
-    RS41(HardwareSerialIMXRT& serial);
+    explicit RS41(HardwareSerialIMXRT& serial);
     /// @brief Destructor
     ///   Power off RS41
     ~RS41();
